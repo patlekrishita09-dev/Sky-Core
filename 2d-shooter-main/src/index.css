@@ -1,0 +1,263 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700&display=swap');
+
+:root {
+  --bg-dark: #020408;
+  --neon-cyan: #00ffe7;
+  --neon-pink: #ff2d78;
+  --neon-purple: #b400ff;
+  --neon-yellow: #ffe600;
+  --text-main: #c8f0ff;
+  --hud-bg: rgba(0, 8, 20, 0.97);
+  --hud-border: #00ffe740;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: 'Share Tech Mono', monospace;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  user-select: none;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Fullscreen Aspect Ratio Constraint */
+.game-area {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: calc(100vh * (16 / 9));
+  max-height: calc(100vw * (9 / 16));
+  background: #000;
+  overflow: hidden;
+  cursor: crosshair;
+  box-shadow:
+    0 0 60px rgba(0, 255, 231, 0.15),
+    0 0 120px rgba(180, 0, 255, 0.1);
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+/* Scanline CRT overlay */
+.crt-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 255, 231, 0.03) 0px,
+    rgba(0, 255, 231, 0.03) 1px,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0) 4px
+  );
+  box-shadow:
+    inset 0 0 80px rgba(0,0,0,0.9),
+    inset 0 0 30px rgba(0,255,231,0.04);
+  z-index: 10;
+}
+
+/* HUD top */
+.hud-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  z-index: 20;
+  font-size: 1.4vmin;
+  pointer-events: none;
+}
+
+/* HUD bottom */
+.hud-bottom {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 10%;
+  background: var(--hud-bg);
+  border-top: 1px solid var(--neon-cyan);
+  box-shadow: 0 -4px 20px rgba(0,255,231,0.15);
+  display: flex;
+  align-items: center;
+  padding: 0 3%;
+  justify-content: space-between;
+  z-index: 20;
+  font-size: 1.2vmin;
+  color: var(--text-main);
+}
+
+.hud-left, .hud-right, .hud-center { display: flex; flex-direction: column; gap: 5px; }
+.hud-center { flex-direction: row; gap: 5px; }
+
+/* Hit/miss tracker boxes */
+.hit-box {
+  width: 2vmin; height: 2vmin;
+  border: 1px solid #1a3040;
+  background: #050d15;
+}
+.hit-box.hit {
+  background: var(--neon-cyan);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 6px var(--neon-cyan);
+}
+.hit-box.miss {
+  background: var(--neon-pink);
+  border-color: var(--neon-pink);
+  box-shadow: 0 0 6px var(--neon-pink);
+}
+
+.text-highlight { color: var(--neon-cyan); text-shadow: 0 0 8px var(--neon-cyan); }
+
+/* Ammo Icons — energy cells */
+.ammo-container {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.bullet-icon {
+  width: 1.0vmin;
+  height: 2.8vmin;
+  background: linear-gradient(180deg, #00ffe7, #0088aa);
+  clip-path: polygon(50% 0%, 100% 20%, 100% 100%, 0% 100%, 0% 20%);
+  box-shadow: 0 0 6px #00ffe7aa;
+  transition: opacity 0.1s, transform 0.1s;
+}
+.bullet-icon.spent {
+  opacity: 0.12;
+  background: #1a2a30;
+  box-shadow: none;
+  transform: scaleY(0.6);
+}
+
+/* UI Screens */
+.overlay-screen {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 4, 8, 0.92);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.title {
+  font-family: 'Orbitron', sans-serif;
+  color: var(--neon-cyan);
+  font-size: 4.5vmin;
+  margin-bottom: 1vh;
+  text-shadow:
+    0 0 10px var(--neon-cyan),
+    0 0 30px var(--neon-cyan),
+    0 0 60px rgba(0,255,231,0.4);
+  letter-spacing: 4px;
+}
+
+.title-sub {
+  font-size: 1.4vmin;
+  color: var(--neon-pink);
+  text-shadow: 0 0 8px var(--neon-pink);
+  margin-bottom: 5vh;
+  letter-spacing: 3px;
+}
+
+.subtitle {
+  font-size: 1.1vmin;
+  color: #6ab0c8;
+  margin-bottom: 4vh;
+  max-width: 60%;
+  line-height: 2;
+}
+
+.menu-opts {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5vh;
+  font-size: 1.6vmin;
+}
+
+.menu-opt {
+  cursor: pointer;
+  color: #8ae8ff;
+  border: 1px solid #00ffe730;
+  padding: 10px 30px;
+  letter-spacing: 2px;
+  transition: all 0.15s;
+  background: rgba(0,255,231,0.03);
+}
+.menu-opt:hover {
+  color: var(--neon-cyan);
+  border-color: var(--neon-cyan);
+  background: rgba(0,255,231,0.08);
+  box-shadow: 0 0 16px rgba(0,255,231,0.2);
+  transform: scale(1.03);
+}
+
+/* Screen flash */
+.flash {
+  position: absolute;
+  inset: 0;
+  background: var(--neon-cyan);
+  opacity: 0;
+  z-index: 40;
+  pointer-events: none;
+}
+
+/* Buttons */
+.btn {
+  pointer-events: auto;
+  background: rgba(0,255,231,0.06);
+  border: 1px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1vmin;
+  padding: 7px 14px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  margin-left: 10px;
+  transition: background 0.15s;
+}
+.btn:hover {
+  background: rgba(0,255,231,0.15);
+  box-shadow: 0 0 10px rgba(0,255,231,0.3);
+}
+
+/* Rain overlay animation */
+@keyframes rain {
+  from { background-position: 0 0; }
+  to   { background-position: -20px 400px; }
+}
+.rain-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0.07;
+  background-image: repeating-linear-gradient(
+    170deg,
+    rgba(0,255,231,0.8) 0px,
+    rgba(0,255,231,0.8) 1px,
+    transparent 1px,
+    transparent 12px
+  );
+  background-size: 20px 60px;
+  animation: rain 0.4s linear infinite;
+}
